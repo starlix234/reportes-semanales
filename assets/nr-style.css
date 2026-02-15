@@ -1,0 +1,35 @@
+/* Básicos */
+body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f5f5f5; margin:0; padding:0; }
+.container { max-width:1020px; margin:2rem auto; padding:1rem; background:#fff; border-radius:10px; box-shadow:0 4px 8px rgba(0,0,0,.06); }
+
+/* Header */
+.nr-header { text-align:center; margin-bottom:1rem; }
+.nr-header .nr-logo { width:140px; height:auto; display:inline-block; }
+
+/* Intro / categories */
+.nr-categories { margin-bottom:1rem; }
+.nr-categories label { display:inline-block; margin-right:10px; font-size:0.95rem; }
+
+/* Artículos */
+.nr-article { margin-bottom:1.5rem; padding:1rem; background:#f9f9f9; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,.04); transition:transform .25s, box-shadow .25s; }
+.nr-article:hover { transform:translateY(-4px); box-shadow:0 8px 18px rgba(0,0,0,.08); }
+.nr-article h2 { margin:0 0 .5rem; color:#004d40; font-size:1.3rem; }
+
+/* Imagen */
+.image-container { margin:1rem 0; border-radius:8px; overflow:hidden; }
+.image-container img { width:100%; height:auto; display:block; }
+
+/* Descripción y botón */
+.description-container { text-align:justify; margin: .5rem 0; }
+.description-container .button { display:inline-block; margin-top:0.6rem; padding:.45rem .9rem; color:#fff; background:#004d40; text-decoration:none; border-radius:6px; font-weight:700; white-space:nowrap; }
+.description-container .button:hover { background:#00362e; }
+
+/* Footer */
+.footer-news { text-align:center; padding:1.5rem; background:#004d40; color:#fff; border-radius:8px; margin-top:1rem; }
+
+/* Responsive */
+@media (max-width:768px) {
+  .container { padding:.8rem; margin:1rem; }
+  .nr-article h2 { font-size:1.1rem; }
+  .nr-header .nr-logo { width:110px; }
+}
