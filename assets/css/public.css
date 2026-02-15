@@ -1,0 +1,7 @@
+.newestler-boletin { 
+    border: 1px dashed #ccc; 
+    padding: 1rem; 
+    background: #fafafa;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+.newestler-boletin h3 { margin-top: 0; }
