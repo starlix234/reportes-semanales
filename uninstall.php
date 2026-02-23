@@ -3,5 +3,9 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
     exit;
 }
 
-// Aquí podrías eliminar tablas/ops si el administrador lo decide.
-// Por ahora no elimina nada automáticamente.
+global $wpdb;
+$like = '%newstler_%';
+$wpdb->query( $wpdb->prepare(
+    "DELETE FROM $wpdb->options WHERE option_name LIKE %s OR option_name LIKE %s",
+    $like, '_transient_' . $like
+) );
