@@ -1,19 +1,153 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
+<html lang="es">
 
-<h1>Instrucciones</h1>
-<ul>
-    <li>Agrega una nueva Pagina</li>
-    <li>Despues busca en los bloques shortcode </li>
-    <li>Copia esto [newstler_boletin]</li>
-    <li>Ahora ya puedes filtrar por categoria y fecha para generar tu boletin semanal</li>
-</ul>
-    x
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Noticias - Exportar selección</title>
+    <style>
+        body{font-family:Arial, sans-serif;margin:0;background:#f5f5f5;color:#333}
+        .container{max-width:1000px;margin:2rem auto;padding:1rem;background:#fff;border-radius:10px}
+        article{padding:1rem;border-radius:8px;margin-bottom:1rem;background:#fafafa;display:flex;gap:1rem;align-items:flex-start}
+        .image-container img{width:140px;height:auto;border-radius:6px}
+        .content{flex:1}
+        .controls{display:flex;gap:10px;align-items:center;margin-bottom:1rem}
+        .controls input,.controls select{padding:0.5rem;border-radius:6px;border:1px solid #ccc}
+        .btn{background:#004d40;color:#fff;padding:0.5rem 0.9rem;border-radius:6px;text-decoration:none;border:none;cursor:pointer}
+        .download-btn{background:#00AA77}
+        .hidden{display:none}
+        .checkbox-col{width:40px}
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Boletín — Selecciona y descarga</h1>
+
+        <div class="controls">
+            <input id="searchInput" type="search" placeholder="Buscar por título o texto..." style="flex:1;" />
+            <select id="filterSelect">
+                <option value="all">Todas</option>
+                <option value="has-image">Con imagen</option>
+                <option value="no-image">Sin imagen</option>
+            </select>
+            <button id="applyFilters" class="btn">Filtrar</button>
+            <div id="selectionInfo" style="margin-left:auto;display:none">Seleccionados: <strong id="selectedCount">0</strong></div>
+            <a id="downloadBtn" class="btn download-btn hidden" href="#" download="seleccion.csv">Descargar selección</a>
+        </div>
+
+        <!-- Lista de artículos (en producción el plugin generará artículos con la misma estructura) -->
+        <div id="articles">
+            <article data-id="1">
+                <div class="checkbox-col"><input type="checkbox" class="selectItem" /></div>
+                <div class="image-container"><img src="http://localhost/wordpress/wp-content/uploads/2026/01/muestreo-salinidad-quintero-1.jpg" alt="Imagen" /></div>
+                <div class="content">
+                    <h2 class="title">Nuevo muestreo de salinidad fortalece monitoreo ambiental en Quintero</h2>
+                    <p class="excerpt">La Federación de Pescadores Bahía Narau y Aguas Pacífico ejecutaron un nuevo muestreo de salinidad en Quintero durante enero de 2026...</p>
+                    <a class="link" href="http://localhost/wordpress/muestreo-de-salinidad-quintero-mesa-salinidad-2026/">Leer</a>
+                </div>
+            </article>
+
+            <article data-id="2">
+                <div class="checkbox-col"><input type="checkbox" class="selectItem" /></div>
+                <div class="image-container"><img src="http://localhost/wordpress/wp-content/uploads/2026/01/trilla-puchuncavi.jpg" alt="Imagen" /></div>
+                <div class="content">
+                    <h2 class="title">Trilla a yegua suelta: tradición campesina que conquista Puchuncaví</h2>
+                    <p class="excerpt">La trilla a yegua suelta congregó a cientos de familias en La Canela, Puchuncaví...</p>
+                    <a class="link" href="http://localhost/wordpress/trilla-a-yegua-suelta-tradicion-puchuncavi/">Leer</a>
+                </div>
+            </article>
+
+            <article data-id="3">
+                <div class="checkbox-col"><input type="checkbox" class="selectItem" /></div>
+                <div class="image-container"><!-- sin imagen --></div>
+                <div class="content">
+                    <h2 class="title">Nota de prensa sin imagen</h2>
+                    <p class="excerpt">Ejemplo de noticia sin imagen para comprobar filtros...</p>
+                    <a class="link" href="#">Leer</a>
+                </div>
+            </article>
+        </div>
+    </div>
+
+    <script>
+        (function(){
+            const searchInput = document.getElementById('searchInput');
+            const filterSelect = document.getElementById('filterSelect');
+            const applyFilters = document.getElementById('applyFilters');
+            const articles = Array.from(document.querySelectorAll('#articles article'));
+            const downloadBtn = document.getElementById('downloadBtn');
+            const selectedCount = document.getElementById('selectedCount');
+            const selectionInfo = document.getElementById('selectionInfo');
+
+            function updateVisibility(){
+                const q = searchInput.value.trim().toLowerCase();
+                const mode = filterSelect.value;
+                articles.forEach(a=>{
+                    const title = (a.querySelector('.title')||{textContent:''}).textContent.toLowerCase();
+                    const excerpt = (a.querySelector('.excerpt')||{textContent:''}).textContent.toLowerCase();
+                    const img = a.querySelector('img');
+                    let visible = true;
+                    if(q){
+                        visible = title.includes(q) || excerpt.includes(q);
+                    }
+                    if(visible && mode==='has-image') visible = !!img;
+                    if(visible && mode==='no-image') visible = !img;
+                    a.style.display = visible ? 'flex' : 'none';
+                });
+            }
+
+            function refreshSelectionState(){
+                const checked = Array.from(document.querySelectorAll('.selectItem:checked'));
+                const any = checked.length>0;
+                selectedCount.textContent = checked.length;
+                selectionInfo.style.display = any ? 'block' : 'none';
+                downloadBtn.classList.toggle('hidden', !any);
+                // build CSV data URL
+                if(any){
+                    const rows = [['Título','URL','Extracto','Imagen']];
+                    checked.forEach(ch=>{
+                        const art = ch.closest('article');
+                        const title = (art.querySelector('.title')||{}).textContent.replace(/\n/g,' ').trim();
+                        const url = (art.querySelector('.link')||{}).href || '';
+                        const excerpt = (art.querySelector('.excerpt')||{}).textContent.replace(/\n/g,' ').trim();
+                        const img = (art.querySelector('img')||{}).src || '';
+                        rows.push([title,url,excerpt,img]);
+                    });
+                    const csv = rows.map(r=>r.map(cell=>`"${String(cell).replace(/"/g,'""')}"`).join(',')).join('\n');
+                    const blob = new Blob([csv],{type:'text/csv;charset=utf-8;'});
+                    const url = URL.createObjectURL(blob);
+                    downloadBtn.href = url;
+                } else {
+                    downloadBtn.href = '#';
+                }
+            }
+
+            // attach listeners
+            applyFilters.addEventListener('click', updateVisibility);
+            searchInput.addEventListener('keypress', function(e){ if(e.key==='Enter'){ updateVisibility(); }});
+
+            document.querySelectorAll('.selectItem').forEach(ch=>{
+                ch.addEventListener('change', refreshSelectionState);
+            });
+
+            // init
+            updateVisibility();
+            refreshSelectionState();
+
+            // Optional: if the plugin renders articles dynamically, observe changes and rebind events
+            const articlesContainer = document.getElementById('articles');
+            const mo = new MutationObserver(()=>{
+                // bind events for new checkboxes
+                document.querySelectorAll('.selectItem').forEach(ch=>{
+                    if(!ch.dataset.bound){ ch.dataset.bound='1'; ch.addEventListener('change', refreshSelectionState); }
+                });
+                // refresh lists
+                while(articlesContainer && articlesContainer.firstChild && !window._articlesBound){ window._articlesBound=true; }
+            });
+            mo.observe(articlesContainer,{childList:true,subtree:true});
+        })();
+    </script>
 </body>
+
 </html>

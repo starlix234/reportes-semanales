@@ -1,7 +1,6 @@
 <?php
 /**
  * Plugin Name: Newstler - Boletín Semanal
- * Plugin URI:  https://github.com/starlix234/Boletin-semanal-nuevo
  * Description: Trae entradas filtradas por categoría y rango de fechas, muestra preview y permite generar un reporte HTML para descarga.
  * Version:     0.1.0
  * Author:      constanza 
