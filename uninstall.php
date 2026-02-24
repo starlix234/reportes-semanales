@@ -9,3 +9,4 @@ $wpdb->query( $wpdb->prepare(
     "DELETE FROM $wpdb->options WHERE option_name LIKE %s OR option_name LIKE %s",
     $like, '_transient_' . $like
 ) );
+?>
